@@ -12,12 +12,11 @@ namespace MonadsInCSharp
         // some sample async functions -- in the real world code,
         // these would be more complex async functions.
 
-        private Task<int> GetIndexOfCharacter(string sentence, char chr) =>
-            // for demo purposes, skipping error handling here, we'll
-            // see error handling later.
+        private Task<int> GetIndexOfCharacterAsync(string sentence, char chr) =>
+            // for demo purposes, skipping error handling here.
             Task.FromResult(sentence.IndexOf(chr));
 
-        private Task<char> GetCharacterAtIndex(string sentence, int index) =>
+        private Task<char> GetCharacterAtIndexAsync(string sentence, int index) =>
             Task.FromResult(sentence[index]);
 
 
@@ -28,8 +27,8 @@ namespace MonadsInCSharp
             Task<char> charToFind = Task.FromResult('H');
 
             char chr = await charToFind;
-            int index = await GetIndexOfCharacter(sentence, chr);
-            char nextChar = await GetCharacterAtIndex(sentence, index);
+            int index = await GetIndexOfCharacterAsync(sentence, chr);
+            char nextChar = await GetCharacterAtIndexAsync(sentence, index);
 
             return nextChar;
         }
@@ -41,8 +40,8 @@ namespace MonadsInCSharp
             Task<char> charToFind = AsyncMonad.Unit('H');
 
             Task<char> divided = charToFind
-                .Bind(chr => GetIndexOfCharacter(sentence, chr))
-                .Bind(index => GetCharacterAtIndex(sentence, index));
+                .Bind(chr => GetIndexOfCharacterAsync(sentence, chr))
+                .Bind(index => GetCharacterAtIndexAsync(sentence, index));
 
             return divided;
         }
@@ -56,11 +55,11 @@ namespace MonadsInCSharp
 
             Task<char> result =
                 from chr in charToFind
-                from index in GetIndexOfCharacter(sentence, chr)
-                from nextChar in GetCharacterAtIndex(sentence, index)
+                from index in GetIndexOfCharacterAsync(sentence, chr)
+                from nextChar in GetCharacterAtIndexAsync(sentence, index)
                 select nextChar;
 
-            /* similar to Haskell...
+            /* similar to 'do notation' Haskell...
                do chr <- charToFind
                   index <- GetIndexOfCharacter sentence chr
                   nextChar <- GetCharacterAtIndex sentence index

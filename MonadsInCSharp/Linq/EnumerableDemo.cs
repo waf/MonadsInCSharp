@@ -6,6 +6,9 @@ using Xunit;
 
 namespace MonadsInCSharp.Linq
 {
+    /// <summary>
+    /// Demonstrates the "list" monad with IEnumerable.
+    /// </summary>
     public class EnumerableDemo
     {
         [Fact]

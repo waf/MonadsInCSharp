@@ -31,7 +31,7 @@ namespace MonadsInCSharp.Linq
             Nullable<int> nullableB = null;
 
             // combine these two instances
-            Nullable<(int a, int b)> pairs =
+            Nullable<(int a, int b)> pair =
                 from a in nullableA
                 from b in nullableB
                 select (a, b);
@@ -69,19 +69,6 @@ namespace MonadsInCSharp.Linq
         }
 
         [Fact]
-        public static Nullable<char> Nullable_WithNullConditionalOperator()
-        {
-            string sentence = "Hello world!";
-            char charToFind = 'H';
-
-            Nullable<char> result = (charToFind
-                .GetIndexOfCharacter(sentence) + 1)
-                ?.GetCharacterAtIndexExt(sentence);
-
-            return result;
-        }
-
-        [Fact]
         public static Nullable<char> Nullable_Composition()
         {
             string sentence = "Hello world!";
@@ -89,8 +76,13 @@ namespace MonadsInCSharp.Linq
             /*// doesn't work!
             Nullable<char> result = GetCharacterAtIndex(
                 sentence,
-                GetIndexOfCharacter(sentence, 'H') + 1
+                GetIndexOfCharacter(sentence, 'H').Value + 1
             );
+
+            Nullable<char> result = ('H'
+                .GetIndexOfCharacter(sentence) + 1)
+                ?.GetCharacterAtIndexExt(sentence);
+
             //*/
 
             // use our monad implementation to compose
@@ -108,7 +100,7 @@ namespace MonadsInCSharp.Linq
 
             Nullable<char> result =
                 from index in GetIndexOfCharacter(sentence, 'H')
-                from nextChar in GetCharacterAtIndex(sentence, index)
+                from nextChar in GetCharacterAtIndex(sentence, index + 1)
                 select nextChar;
 
             return result;

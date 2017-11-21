@@ -16,7 +16,7 @@ namespace MonadsInCSharp.MonadTypes
         }
 
         /// <summary>
-        /// Applies 'action' to the value inside 'target' and un-nests the wrapped T object
+        /// Applies 'action' to the value inside 'target' and returns a flattened object.
         /// </summary>
         public static Nullable<TResult> Bind<T, TResult>(
             this Nullable<T> target,
@@ -58,7 +58,8 @@ namespace MonadsInCSharp.MonadTypes
             where TNullable : struct
         {
             return source
-                .Bind(s => projector(s).Bind(value => Unit(selector(s, value))));
+                .Bind(src => projector(src)
+                    .Bind(value => Unit(selector(src, value))));
         }
     }
 }

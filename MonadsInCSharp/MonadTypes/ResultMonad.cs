@@ -10,17 +10,17 @@ namespace MonadsInCSharp
         /// Wraps a T object
         /// </summary>
         public static Result<TResult> Unit<TResult>(TResult obj) =>
-            Result<TResult>.Ok(obj);
+            Result<TResult>.Success(obj);
 
         /// <summary>
-        /// Applies action and un-nests the wrapped T object
+        /// Applies 'action' to the value inside 'target' and returns an un-nested object.
         /// </summary>
         public static Result<TResult> Bind<T, TResult>(
             this Result<T> target,
             Func<T, Result<TResult>> action)
         {
-            return target.isOk
-                ? action(target.ok)
+            return target.IsSuccess
+                ? action(target.success)
                 : Result<TResult>.Error(target.error);
         }
 
@@ -32,15 +32,16 @@ namespace MonadsInCSharp
 
 
         public static Result<TResult> SelectMany<TSource, TResult>(
-                this Result<TSource> m,
+                this Result<TSource> source,
                 Func<TSource, Result<TResult>> projector) =>
-            Bind(m, projector);
+            Bind(source, projector);
 
         public static Result<TResult> SelectMany<TSource, TIntermediate, TResult>(
-                        this Result<TSource> m,
+                        this Result<TSource> source,
                         Func<TSource, Result<TIntermediate>> projector,
                         Func<TSource, TIntermediate, TResult> selector) =>
-            m.Bind(source => projector(source)
-                .Bind(task => Unit(selector(source, task))));
+            source
+                .Bind(src => projector(src)
+                    .Bind(value => Unit(selector(src, value))));
     }
 }

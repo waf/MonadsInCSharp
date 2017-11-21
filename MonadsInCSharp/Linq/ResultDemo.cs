@@ -5,7 +5,6 @@ using Xunit;
 
 namespace MonadsInCSharp
 {
-
     public class ResultDemo
     {
         // some sample functions that throw exceptions
@@ -23,43 +22,43 @@ namespace MonadsInCSharp
                 : sentence[index];
         }
 
-        // the same as above, but with the Result monad
-        static Result<int> GetIndexOfCharacter(string sentence, char chr)
-        {
-            int index = sentence.IndexOf(chr);
-            return index == -1
-                ? Result<int>.Error($"character {chr} is not in string {sentence}")
-                : Result<int>.Ok(index);
-        }
-        static Result<char> GetCharacterAtIndex(string sentence, int index)
-        {
-            return index < 0 || sentence.Length <= index
-                ? Result<char>.Error($"Index {index} is out of bounds of the string {sentence}")
-                : Result<char>.Ok(sentence[index]);
-        }
-
         [Fact]
-        public static int Demo_Exception()
+        public static char Demo_Exception()
         {
             string sentence = "Hello World";
             char charToFind = 'H';
             try
             {
                 int index = GetIndexOfCharacterException(sentence, charToFind);
-                int nextChar = GetCharacterAtIndexException(sentence, index + 1);
+                char nextChar = GetCharacterAtIndexException(sentence, index + 1);
                 return nextChar;
             }
             catch (Exception e)
             {
-                // e.g. do some logging
+                // e.g. do some logging or recovery
                 throw;
             }
+        }
+
+        // the same as above, but with the Result monad
+        static Result<int> GetIndexOfCharacter(string sentence, char chr)
+        {
+            int index = sentence.IndexOf(chr);
+            return index == -1
+                ? Result<int>.Error($"character {chr} is not in string {sentence}")
+                : Result<int>.Success(index);
+        }
+        static Result<char> GetCharacterAtIndex(string sentence, int index)
+        {
+            return index < 0 || sentence.Length <= index
+                ? Result<char>.Error($"Index {index} is out of bounds of the string {sentence}")
+                : Result<char>.Success(sentence[index]);
         }
 
         [Fact]
         public static Result<char> Demo_WithBind()
         {
-            string sentence = "Hello World";
+            string sentence = "Hello World!";
             Result<char> charToFind = ResultMonad.Unit('H');
 
             Result<char> nextChar = charToFind
